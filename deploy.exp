@@ -1,0 +1,6 @@
+#!/bin/bash/expect
+spawn /opt/cicd_test/deploy.sh
+expect "password for"
+send -- "ваш пароль"
+expect eof  
+
