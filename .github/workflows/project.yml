@@ -1,0 +1,50 @@
+name: Django test project
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    env:
+      PG_NAME: ${{ secrets.PG_NAME }}
+      PG_USER: ${{ secrets.PG_USER }}
+      PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
+      PG_HOST: ${{ secrets.PG_HOST }}
+      PG_PORT: ${{ secrets.PG_PORT }}
+    services:
+      postgres_main:
+        image: postgresql:latest
+        env:
+          POSTGRES_USER: ${{ env.PG_USER }}
+          POSTGRES_PASSWORD: ${{ env.PG_PASSWORD }}
+          POSTGRES_DB: ${{ env.PG_NAME }}
+        ports:  # как развернутый POSTGRES будет с нашим приложением контактировать
+          - 5432:5432  # внешний(порт выбрасываемый наружу из контейнера на хост-машину) : внутренний(порт внутри контейнера). На вопрос о перенаправлении порта 80/443: будет запущено Django-приложение, но снаружи мы не будем к нему стучаться
+        options:  # Django может запуститься быстрее, чем Postgres, и он начнется обращаться к Postgres, а Postgres еще не запущен
+          --health-cmd pg_isready  # Проверка, что сервер PostgreSQL готов принимать подключения.
+          --health-interval 5s  # Как часто будет выполняться проверка здоровья.
+          --health-timeout 5s  # Сколько времени максимум ждать за которое проверка здоровья завершится.
+          --health-retries 5  # Если проверка здоровья будет неудачной 5 раз подряд, то контейнер будет считаться нездоровым.
+          # Например, если --health-interval равен 5 секундам, а --health-timeout равен 3 секундам, это означает, что проверки будут выполняться каждые 5 секунд, и каждая проверка должна завершиться в течение 3 секунд, иначе она будет считаться неудачной.
+    steps:
+      - name: Проверяем репозиторий на наличие изменений
+        uses: actions/checkout@v2
+      - name: Установка Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - name: Установка зависимостей
+        run: pip install -r requirements.txt
+      - name: Линтинг кода
+        run: flake8 --exclude migrations --ignore E501,F401
+      - name: Тестирование
+        run: python webpython/manage.py test
+        env:
+          PG_NAME: ${{ env.PG_NAME }}
+          PG_USER: ${{ env.PG_USER }}
+          PG_PASSWORD: ${{ env.PG_PASSWORD }}
+          PG_HOST: ${{ env.PG_HOST }}
+          PG_PORT: ${{ env.PG_PORT }}
+

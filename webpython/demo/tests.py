@@ -2,9 +2,8 @@ from django.test import TestCase
 
 
 class MyTest(TestCase):
-
     def test_one(self):
-        self.assertTrue(True)
+        self.assertTrue(3 == 3, 'not True')
 
     def test_two(self):
-        self.assertTrue(True)
+        self.assertFalse(7 == 6, 'not False')
