@@ -15,7 +15,7 @@ jobs:
       PG_PORT: ${{ secrets.PG_PORT }}
     services:
       postgres_main:
-        image: postgresql:latest
+        image: postgres:latest
         env:
           POSTGRES_USER: ${{ env.PG_USER }}
           POSTGRES_PASSWORD: ${{ env.PG_PASSWORD }}
