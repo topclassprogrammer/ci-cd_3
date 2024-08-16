@@ -59,8 +59,11 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             mkdir /opt/ci-cd_3
+            echo "test message 1"
             cd /opt/ci-cd_3
+            echo "test message 2"
             git pull origin main
+            echo "test message 3"
             source env/bin/activate
             pip install -r requirements.txt
             python webpython/manage.py migrate
