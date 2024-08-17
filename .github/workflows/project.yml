@@ -34,7 +34,7 @@ jobs:
       - name: Проверяем репозиторий ${{ github.repository_owner }} на наличие изменений при событии ${{ github.event_name }}
         uses: actions/checkout@v2
       - name: Установка Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
       - name: Установка зависимостей
