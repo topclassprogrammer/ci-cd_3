@@ -4,4 +4,4 @@ from django.http import HttpResponse
 
 
 def index(request):
-    return HttpResponse("Netology has been started")
+    return HttpResponse("Just Netology")
