@@ -28,7 +28,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - name: Проверяем репозиторий ${{ github.repository_owner }} на наличие изменений
+      - name: Проверяем репозиторий ${{ github.repository_owner }} на наличие изменений в джобе ${{ name }}
         uses: actions/checkout@v2
       - name: Установка Python
         uses: actions/setup-python@v5
