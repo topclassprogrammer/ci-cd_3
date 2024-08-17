@@ -7,9 +7,6 @@ on:
 jobs:
   testing:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.9, 3.11, 3.12]
     env:
       PG_NAME: ${{ secrets.PG_NAME }}
       PG_USER: ${{ secrets.PG_USER }}
@@ -31,12 +28,12 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - name: Проверяем репозиторий ${{ github.repository_owner }} на наличие изменений при событии ${{ github.event_name }}
+      - name: Проверяем репозиторий на наличие изменений
         uses: actions/checkout@v2
       - name: Установка Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.12
       - name: Установка зависимостей
         run: pip install -r requirements.txt
       - name: Линтинг кода
