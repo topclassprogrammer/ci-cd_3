@@ -46,25 +46,19 @@ jobs:
           PG_PASSWORD: ${{ env.PG_PASSWORD }}
           PG_HOST: ${{ env.PG_HOST }}
           PG_PORT: ${{ env.PG_PORT }}
-  deploy:  # С этого момента начинается CD
+  deploy:  # CD начинается с этого момента. Название(deploy) может быть любым, т.к. это второй job
     name: Доставка кода
-    needs: testing  # Будет запущена после выполнения job'а с именем testing
+    needs: testing  # Будет запущена после успешного выполнения job'а с именем testing
     runs-on: ubuntu-latest
     steps:
       - name: Запуск скрипта обновления
         uses: appleboy/ssh-action@master  # Скрипт подключения к удаленному серверу
-        with:  # К какому именно серверу
+        with:  # Параметры подключения к удаленному серверу
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
-          script: |  # Что должно выполняться. Знак | означает ИЛИ, чтобы мы могли несколько команд выполнять
-            cd /opt/ci-cd_3  # Войти в папку где у нас лежит проект
-            git pull origin main  # Скачать обновления с ГитХаба
-            source webpython/.venv/bin/activate  # Активируем наше виртуальное окружение
-            python3.12 -m pip install -r requirements.txt
-            python webpython/manage.py migrate
-            sudo systemctl restart gunicorn  # Перезапускаем службу, чтобы накатились все обновления Django
-            
+          script: expect /opt/ci-cd_3/deploy.exp
+
 
 
 
